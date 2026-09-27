@@ -4,6 +4,8 @@
 
 图片 / 文档 / 音视频互转，扫描件与照片识别成中文文字，PDF 转图片与文字。
 
+![界面截图](docs/screenshot.png)
+
 ## 特性
 
 | 类别 | 说明 |
@@ -172,3 +174,7 @@ journalctl -u fileconvert -f
 - 不支持电子书互转（未集成 Calibre）
 - HEIC 只能读不能写（ImageMagick 的限制），所以 `JPG → HEIC` 不可用
 - 共享口令模式**不区分用户**；同一台电脑同一个浏览器上的两个人会共用一份列表
+
+## 许可证
+
+[MIT](LICENSE)
