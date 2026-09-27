@@ -17,18 +17,25 @@
 界面为中文，**零外部依赖**（不引任何 CDN 字体或脚本，断网也能正常显示），
 所有资源用相对路径，因此可以挂在任意子路径下（如 `/convert/`）。
 
-## 设计取舍：为什么不直接部署现成的转换平台
+## 设计取舍：调用宿主机工具链，而不是容器化
 
-本机**已经装了** ffmpeg、LibreOffice(full)、ImageMagick、pandoc、ghostscript、poppler、tesseract，
-高频需求全部覆盖得到。而 ConvertX 的镜像是 **1.45 GiB**（要把这整套工具链再打包一遍）、
-**界面纯英文且上游无 i18n 计划**、镜像内还**没有 CJK 字体**（中文 Markdown → PDF 输出空白）。
+转换能力（ffmpeg / LibreOffice / ImageMagick / pandoc / ghostscript / poppler / tesseract）
+由子进程直接调用宿主机上已安装的命令行工具，而不是把它们打包进容器镜像。与同类方案对比：
 
-自建的结果：**venv 39 MB / 18 个包**，中文原生，只暴露真正需要的转换 —— 体积小两个数量级，攻击面也更小。
+| | 本项目 | 把一个完整的转换平台容器化 |
+|---|---|---|
+| 部署体积 | venv 约 **39 MB / 18 个包** | 约 **1.45 GiB**（相当于把整条工具链再打包一遍，例如 ConvertX 镜像） |
+| 界面语言 | 中文原生 | 多为纯英文界面，上游通常没有 i18n 计划 |
+| 中文文档转 PDF | 用系统字体，正常输出 | 镜像内常缺 CJK 字体，中文 Markdown → PDF 会输出空白 |
+| 暴露面 | 只放行白名单里的转换组合 | 通用文件处理平台，功能面大得多 |
+
+代价是**宿主机必须预装对应的外部命令**，缺一个就少一种输出格式（见「快速开始」）。
+换来的是：不需要为跑一个转换服务而维护一整套镜像，体积小两个数量级，能做的事也被限制在明确的白名单内。
 
 ## 快速开始
 
 ```bash
-git clone <本仓库地址> && cd SimpleFileConvert
+git clone <仓库地址> && cd <仓库目录>
 
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
