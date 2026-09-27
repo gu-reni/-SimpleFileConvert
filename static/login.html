@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>文件格式转换 · 需要口令</title>
+<link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+<div class="wrap">
+  <div class="login">
+    <div class="card">
+      <div class="logo">文件格式转换<span class="dot">.</span></div>
+      <p class="lede" style="margin-bottom:20px;">请输入访问口令。</p>
+      <form id="login-form">
+        <label for="pw" class="muted" style="font-size:13px;">口令</label>
+        <div style="height:7px"></div>
+        <input id="pw" class="field" type="password" name="password"
+               autocomplete="current-password" required autofocus />
+        <div class="err" id="err" hidden></div>
+        <div style="height:16px"></div>
+        <button class="primary" id="submit" type="submit">进入</button>
+      </form>
+    </div>
+    <footer class="foot"><span><a href="/">← 返回工具列表</a></span></footer>
+  </div>
+</div>
+<script>
+// 相对路径 post：本页在 /convert/ 下，nginx 剥前缀后即 /api/login
+document.getElementById('login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('submit');
+  const err = document.getElementById('err');
+  btn.disabled = true; err.hidden = true; btn.textContent = '验证中…';
+  try {
+    const fd = new FormData();
+    fd.append('password', document.getElementById('pw').value);
+    const r = await fetch('api/login', { method: 'POST', body: fd, credentials: 'same-origin' });
+    if (r.ok) { location.reload(); return; }
+    const d = await r.json().catch(() => ({}));
+    err.textContent = d.detail || '口令不正确。';
+    err.hidden = false;
+  } catch (_) {
+    err.textContent = '连不上服务器，稍后再试。';
+    err.hidden = false;
+  }
+  btn.disabled = false; btn.textContent = '进入';
+});
+</script>
+</body>
+</html>

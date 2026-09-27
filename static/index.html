@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>文件格式转换</title>
+<!-- 相对路径：本页挂在 /convert/ 下，nginx 会剥掉前缀，用相对路径才能正确解析 -->
+<link rel="stylesheet" href="static/style.css" />
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <span class="brand">文件格式转换<span class="dot">.</span></span>
+      <span class="sub">把文件换成另一种格式</span>
+    </div>
+    <button class="link" id="logout" type="button">退出</button>
+  </header>
+
+  <h1>上传一个文件</h1>
+  <p class="lede">选好文件后会出现可转换的目标格式，点一下就转。</p>
+
+  <section class="card" aria-labelledby="up-h">
+    <h2 id="up-h" class="muted" style="font-size:13px;font-weight:500;margin:0 0 14px;">第一步 · 选择文件</h2>
+    <div class="drop" id="drop" role="button" tabindex="0" aria-label="选择文件或拖放文件到此处">
+      <span class="mark" aria-hidden="true">＋</span>
+      <div>点这里选文件，或把文件拖进来</div>
+      <div class="hint">单个文件最大 500 MB · 同时最多 2 个转换</div>
+      <input id="file" type="file" hidden />
+    </div>
+    <div class="fname" id="fname" hidden></div>
+  </section>
+
+  <section class="card" id="target-card" aria-labelledby="tg-h" hidden>
+    <h2 id="tg-h" class="muted" style="font-size:13px;font-weight:500;margin:0 0 14px;">第二步 · 选择要转成的格式</h2>
+    <div class="targets" id="targets"></div>
+  </section>
+
+  <section class="card" id="result-card" aria-labelledby="rs-h" hidden>
+    <h2 id="rs-h" class="muted" style="font-size:13px;font-weight:500;margin:0 0 14px;">第三步 · 取回结果</h2>
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+    <div class="err" id="error" hidden></div>
+  </section>
+
+  <section class="card" aria-labelledby="done-h">
+    <div class="cardhead">
+      <h2 id="done-h" class="muted">已处理文件</h2>
+      <button class="link" id="clear-done" type="button" hidden>清空本次记录</button>
+    </div>
+    <table class="hist">
+      <thead><tr><th>文件名</th><th>原格式</th><th>转为</th><th>状态</th><th>大小</th><th>操作</th></tr></thead>
+      <tbody id="done"><tr><td colspan="6" class="muted">本次还没有处理过文件。</td></tr></tbody>
+    </table>
+  </section>
+
+  <footer class="foot">
+    <span>关闭或刷新网页后自动删除转换记录，请确保已下载转换后的文件。</span>
+    <span><a href="/">← 返回工具列表</a></span>
+  </footer>
+</div>
+<script src="static/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+[Unit]
+Description=fileconvert —— 文件格式转换服务
+# 把 <你的仓库地址> 换成你的实际地址
+Documentation=<你的仓库地址>
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 把 <用户名> 和 <项目绝对路径> 换成你自己的；下同
+User=<用户名>
+Group=<用户名>
+WorkingDirectory=<项目绝对路径>
+
+# 默认只绑回环，由 nginx 反代对外。
+# 需要局域网直连时再加一个地址，例如：
+#   Environment=FC_HOST=127.0.0.1,192.168.1.10
+# 绝不含 0.0.0.0 —— 对外只走 nginx，避免绕过防火墙被直连。
+Environment=FC_HOST=127.0.0.1
+Environment=FC_PORT=18080
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+
+ExecStart=<项目绝对路径>/.venv/bin/python app.py
+
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+KillMode=mixed
+
+# ---------- 资源限制 ----------
+# 小内存机器上必须限：一个 500MB 视频或复杂矢量 PDF 就足以吃光内存并把整机拖垮。
+# 数值按你的机器调整。
+CPUQuota=150%
+MemoryHigh=1200M
+MemoryMax=2G
+TasksMax=128
+Nice=5
+
+# ---------- 加固 ----------
+# 这是一个对公网开放的文件上传服务，按最小权限收紧。
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=read-only
+# 只有数据目录可写（临时文件 + 产出），其余包括代码目录一律只读
+ReadWritePaths=<项目绝对路径>/data
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictSUIDSGID=yes
+RestrictRealtime=yes
+LockPersonality=yes
+# 注意：不要开 MemoryDenyWriteExecute —— 会破坏 CPython 与部分原生库。
+# 不要开 RestrictNamespaces —— LibreOffice 内部会用到命名空间。
+
+[Install]
+WantedBy=multi-user.target
